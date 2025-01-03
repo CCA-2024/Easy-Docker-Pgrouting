@@ -23,3 +23,12 @@ Links for pgRouting v3 Forked:
 - [https://hub.docker.com/r/pgrouting/pgrouting/tags](*/). Base Image Docker Tags Pgrouting - Version.
 
 - [https://docs.pgrouting.org/latest/en/index.html](*/). Docs Pgrouting.
+
+## 1° Step
+ - Download your osm grahp in [Geofabrik](https://download.geofabrik.de/)
+ - Save Your file downloaded *.pbf in `src\OSM\<Your File>.pbf`
+ - Update Name File *.pfb in `src\Dockerfile`
+
+## 2° Step
+ - Run `Docker compose up --build -d`
+ - Finish Your have Pgrouting Online!!
