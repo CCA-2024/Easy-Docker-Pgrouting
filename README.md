@@ -27,7 +27,7 @@ Links for pgRouting v3 Forked:
 ## 1° Step
  - Download your osm grahp in [Geofabrik](https://download.geofabrik.de/)
  - Save Your file downloaded *.pbf in `src\OSM\<Your File>.pbf`
- - Update Name File *.pfb in `src\Dockerfile`
+ - Update `<Your File>.pbf` in `src\Dockerfile`
 
 ## 2° Step
  - Run `Docker compose up --build -d`
