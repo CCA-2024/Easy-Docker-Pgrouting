@@ -30,5 +30,6 @@ Links for pgRouting v3 Forked:
  - Update `<Your File>.pbf` in `src\Dockerfile`
 
 ## 2° Step
+ - Open cmd and acess src
  - Run `Docker compose up --build -d`
  - Finish Your have Pgrouting Online!!
