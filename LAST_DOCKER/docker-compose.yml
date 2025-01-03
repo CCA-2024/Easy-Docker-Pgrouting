@@ -1,0 +1,32 @@
+name: PGROUTING
+
+services:
+  db:
+    container_name: pgrouting_db
+    image: postgis/postgis:16-3.4
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: routing
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  pgrouting:
+    container_name: pgrouting_16-3.4-3.6.2
+    build:
+      context: .
+    environment:
+      FILE_OSM: brazil-latest.osm.pbf
+      TYPEGRAPH: mapconfig.xml
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: routing
+    volumes:
+      - ./OSM:/app/OSM:rw
+    depends_on:
+      - db
+
+volumes:
+  db-data:
