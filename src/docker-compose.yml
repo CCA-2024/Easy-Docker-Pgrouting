@@ -13,7 +13,12 @@ services:
       - ./OSM:/app/OSM/:rw
       - db-data:/var/lib/postgresql/data
     environment:
+      - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=postgres
-          
+      - POSTGRES_DB_NAME=postgres
+      - POSTGRES_DB_PORT=5432
+      - FILE_OSM=brazil-latest.osm.pbf # FILENAME OSM DONWLOADED GEOFABRICK
+      - TYPEGRAPH=mapconfig.xml # CHOICE [mapconfig_for_cars.xml, mapconfig_for_bicycles.xml, mapconfig_for_cars.xml, mapconfig_for_pedestrian.xml]
+      
 volumes:
   db-data:

@@ -1,16 +1,9 @@
 FROM postgis/postgis:16-3.4
 
-# EDIT NAME FOR YOUR FILE OSM
-ENV FILE_OSM brazil-latest.osm.pbf
-
-# EDIT YOUR GRAPH TYPE 
-# CHOICE >> [mapconfig_for_cars.xml, mapconfig_for_bicycles.xml, mapconfig_for_cars.xml, mapconfig_for_pedestrian.xml]
-ENV TYPEGRAPH mapconfig.xml  
-
 # DEFAULTS VERSIONS
-ENV OSM2PGROUTING_VERSION 2.3.8
-ENV PGROUTING_VERSION 3.6.2
-ENV PGROUTING_SHA256 f4a1ed79d6f714e52548eca3bb8e5593c6745f1bde92eb5fb858efd8984dffa2
+ENV OSM2PGROUTING_VERSION=2.3.8
+ENV PGROUTING_VERSION=3.6.2
+ENV PGROUTING_SHA256=f4a1ed79d6f714e52548eca3bb8e5593c6745f1bde92eb5fb858efd8984dffa2
 
 # CODE MAKE PGROUTING
 RUN set -ex \
@@ -87,15 +80,16 @@ WORKDIR /app
 COPY . .
 
 # CONVERT PBF TO OSM
-RUN chmod +x ./OSM/brazil-latest.osm.pbf
-RUN chmod +x ./OSM/osmconvert64
+# RUN su
+# RUN chmod +x ./OSM/${FILE_OSM}
+# RUN chmod +x ./OSM/osmconvert64
 RUN ./OSM/osmconvert64 ./OSM/${FILE_OSM} --drop-author --drop-version --out-osm -o=./OSM/output_data_reduc.osm
 
 # BUILD GRAPH TO DB
 RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz
 RUN tar xvf v${OSM2PGROUTING_VERSION}.tar.gz
 RUN rm v${OSM2PGROUTING_VERSION}.tar.gz
-RUN osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-${OSM2PGROUTING_VERSION}/${TYPEGRAPH} --dbname postgres --username postgres --clean
+RUN osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-${OSM2PGROUTING_VERSION}/${TYPEGRAPH} --dbname ${POSTGRES_DB_NAME} --username ${POSTGRES_USERNAME} --password ${POSTGRES_PASSWORD} --port ${POSTGRES_DB_PORT} --clean
 
 # CLEAN LIBs
 RUN apt purge -y --autoremove \
