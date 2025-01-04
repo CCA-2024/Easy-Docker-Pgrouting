@@ -89,7 +89,8 @@ RUN ./OSM/osmconvert64 ./OSM/${FILE_OSM} --drop-author --drop-version --out-osm 
 RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz
 RUN tar xvf v${OSM2PGROUTING_VERSION}.tar.gz
 RUN rm v${OSM2PGROUTING_VERSION}.tar.gz
-RUN osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-${OSM2PGROUTING_VERSION}/${TYPEGRAPH} --dbname ${POSTGRES_DB_NAME} --username ${POSTGRES_USERNAME} --password ${POSTGRES_PASSWORD} --port ${POSTGRES_DB_PORT} --clean
+RUN osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-${OSM2PGROUTING_VERSION}/${TYPEGRAPH} --dbname ${POSTGRES_DB_NAME} --username ${POSTGRES_USERNAME} --password ${POSTGRES_PASSWORD} --port ${POSTGRES_DB_PORT} --chunk ${CHUCK_SIZE_KB} --clean
+RUN rm -rf osm2pgrouting-${OSM2PGROUTING_VERSION}
 
 # CLEAN LIBs
 RUN apt purge -y --autoremove \
