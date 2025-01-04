@@ -1,9 +1,9 @@
-name: PGROUTING
+name: PGrouting
 
 services:
 
   pgrouting:
-    container_name: pgrouting_16-3.4-3.6.2
+    container_name: Easy_PGrouting
     image: pgrouting/pgrouting:16-3.4-3.6.2
     build:
       context: .
@@ -18,7 +18,8 @@ services:
       - POSTGRES_DB_NAME=postgres
       - POSTGRES_DB_PORT=5432
       - FILE_OSM=brazil-latest.osm.pbf  # FILENAME OSM DONWLOADED GEOFABRICK
-      - TYPEGRAPH=mapconfig.xml         # CHOICE [mapconfig_for_cars.xml, mapconfig_for_bicycles.xml, mapconfig_for_cars.xml, mapconfig_for_pedestrian.xml]
+      - TYPEGRAPH=mapconfig_for_cars.xml        # CHOICE [mapconfig.xml, mapconfig_for_cars.xml, mapconfig_for_bicycles.xml, mapconfig_for_cars.xml, mapconfig_for_pedestrian.xml]
       - CHUCK_SIZE_KB=20000             # SET FOR NO OUT OF MEMORY - DEFAULT 20MB
+
 volumes:
   db-data:
