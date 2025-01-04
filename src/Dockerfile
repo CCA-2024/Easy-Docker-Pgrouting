@@ -1,3 +1,4 @@
+# Use a base image for PostGIS and PostgreSQL
 FROM postgis/postgis:16-3.4
 
 # DEFAULTS VERSIONS
@@ -5,7 +6,7 @@ ENV OSM2PGROUTING_VERSION=2.3.8
 ENV PGROUTING_VERSION=3.6.2
 ENV PGROUTING_SHA256=f4a1ed79d6f714e52548eca3bb8e5593c6745f1bde92eb5fb858efd8984dffa2
 
-# CODE MAKE PGROUTING
+# Install dependencies for PGROUTING and OSM2PGROUTING
 RUN set -ex \
  && apt update \
  && apt install -y \
@@ -26,11 +27,7 @@ RUN set -ex \
  && wget -O pgrouting.tar.gz "https://github.com/pgRouting/pgrouting/archive/v${PGROUTING_VERSION}.tar.gz" \
  && echo "$PGROUTING_SHA256 *pgrouting.tar.gz" | sha256sum -c - \
  && mkdir -p /usr/src/pgrouting \
- && tar \
-        --extract \
-        --file pgrouting.tar.gz \
-        --directory /usr/src/pgrouting \
-        --strip-components 1 \
+ && tar --extract --file pgrouting.tar.gz --directory /usr/src/pgrouting --strip-components 1 \
  && rm pgrouting.tar.gz \
  && cd /usr/src/pgrouting \
  && mkdir build \
@@ -41,58 +38,53 @@ RUN set -ex \
  && cd / \
  && rm -rf /usr/src/pgrouting \
  && apt-mark manual postgresql-16
-RUN rm /docker-entrypoint-initdb.d/10_postgis.sh
 
-# CODE MAKE OSM2PGROUTING
+# Install OSM2PGROUTING
 RUN apt update \
-&& apt install -y \
-       libpqxx-6.4 \
-&& apt install -y \
-       build-essential \
-       cmake \
-       wget \
-       libboost-program-options-dev \
-       libexpat1 \
-       libexpat-dev \
-       libosmium2-dev \
-       libpqxx-dev \
-       zlib1g-dev \
-&& cd /usr/local/src \
-&& wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
-&& tar xvf v${OSM2PGROUTING_VERSION}.tar.gz \
-&& cd osm2pgrouting-${OSM2PGROUTING_VERSION} \
-&& mkdir build \
-&& cd build \
-&& cmake .. \
-&& make \
-&& make install \
-&& cd ../tools/osmium/ \
-&& mkdir build \
-&& cd build \
-&& cmake .. \
-&& make \
-&& make install \
-&& cd /usr/local/src \
-&& rm -rf ./* 
+ && apt install -y \
+        libpqxx-6.4 \
+ && apt install -y \
+        build-essential \
+        cmake \
+        wget \
+        libboost-program-options-dev \
+        libexpat1 \
+        libexpat-dev \
+        libosmium2-dev \
+        libpqxx-dev \
+        zlib1g-dev \
+ && cd /usr/local/src \
+ && wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
+ && tar xvf v${OSM2PGROUTING_VERSION}.tar.gz \
+ && cd osm2pgrouting-${OSM2PGROUTING_VERSION} \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make \
+ && make install \
+ && cd ../tools/osmium/ \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make \
+ && make install \
+ && cd /usr/local/src \
+ && rm -rf ./*
 
 # CREATE PATH TO APP
 WORKDIR /app
-COPY . .
+# COPY ./OSM /app/OSM
 
-# CONVERT PBF TO OSM
-# RUN su
-# RUN chmod +x ./OSM/${FILE_OSM}
-# RUN chmod +x ./OSM/osmconvert64
-RUN ./OSM/osmconvert64 ./OSM/${FILE_OSM} --drop-author --drop-version --out-osm -o=./OSM/output_data_reduc.osm
+# DONWLOAD TYPES GRAPHs FOR USE
+RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
+&& tar xvf v${OSM2PGROUTING_VERSION}.tar.gz \
+&& rm v${OSM2PGROUTING_VERSION}.tar.gz \
+&& mkdir osm2pgrouting \
+&& cp ./osm2pgrouting-${OSM2PGROUTING_VERSION}/*.xml osm2pgrouting \
+&& rm -rf osm2pgrouting-${OSM2PGROUTING_VERSION} \
+&& mv osm2pgrouting osm2pgrouting-${OSM2PGROUTING_VERSION}
 
-# BUILD GRAPH TO DB
-RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz
-RUN tar xvf v${OSM2PGROUTING_VERSION}.tar.gz
-RUN rm v${OSM2PGROUTING_VERSION}.tar.gz
-RUN osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-${OSM2PGROUTING_VERSION}/${TYPEGRAPH} --dbname ${POSTGRES_DB_NAME} --username ${POSTGRES_USERNAME} --password ${POSTGRES_PASSWORD} --port ${POSTGRES_DB_PORT} --chunk ${CHUCK_SIZE_KB} --clean
-RUN rm -rf osm2pgrouting-${OSM2PGROUTING_VERSION}
-
-# CLEAN LIBs
+# Clean up unnecessary packages
 RUN apt purge -y --autoremove \
        build-essential \
        cmake \
@@ -105,5 +97,8 @@ RUN apt purge -y --autoremove \
        libosmium2-dev \
        libpqxx-dev \
        zlib1g-dev \
-       && apt autoremove -y \
-       && rm -rf /var/lib/apt/lists/*
+ && apt autoremove -y \
+ && rm -rf /var/lib/apt/lists/*
+
+# Expose PostgreSQL port
+EXPOSE 5432

@@ -1,25 +1,44 @@
-name: PGrouting
+name: ROUTER_SERVICE
+version: "3.8"
 
 services:
 
-  pgrouting:
-    container_name: Easy_PGrouting
+  PGROUTING:
+    container_name: PGROUTING_DB
     image: pgrouting/pgrouting:16-3.4-3.6.2
     build:
       context: .
     ports:
       - "5432:5432"
     volumes:
-      - ./OSM:/app/OSM/:rw
       - db-data:/var/lib/postgresql/data
+      - ./OSM:/app/OSM:rw
     environment:
-      - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB_NAME=postgres
-      - POSTGRES_DB_PORT=5432
-      - FILE_OSM=brazil-latest.osm.pbf  # FILENAME OSM DONWLOADED GEOFABRICK
-      - TYPEGRAPH=mapconfig_for_cars.xml        # CHOICE [mapconfig.xml, mapconfig_for_cars.xml, mapconfig_for_bicycles.xml, mapconfig_for_pedestrian.xml]
-      - CHUCK_SIZE_KB=20000             # SET FOR NO OUT OF MEMORY - DEFAULT 20MB
+      POSTGRES_USER:      postgres
+      POSTGRES_PASSWORD:  postgres
+      POSTGRES_DB:        routing
+    restart: always  # Garante que o banco de dados sempre ficará online
+    networks:
+      - pgrouting_network
+
+  UPDATER:
+    container_name: PGROUTING_UP_GRAPH
+    image: pgrouting/pgrouting:16-3.4-3.6.2
+    volumes:
+      - ./OSM:/app/OSM:rw
+    environment:
+      CHUCK_SIZE_KB:      20000
+    depends_on:
+      - PGROUTING
+    command: >
+      bash -c "/app/OSM/osmconvert64 ./OSM/centro-oeste-latest.osm.pbf --drop-author --drop-version --drop-broken-ref -o=./OSM/output_data_reduc.osm &&
+               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --dbname routing --username postgres --password postgres --port 5432 --clean"
+    networks:
+      - pgrouting_network
 
 volumes:
   db-data:
+
+networks:
+  pgrouting_network:
+    driver: bridge
