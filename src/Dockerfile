@@ -1,4 +1,5 @@
 # Use a base image for PostGIS and PostgreSQL
+# postgis/postgis:16-3.4 pgrouting/pgrouting:16-3.4-3.6.1
 FROM postgis/postgis:16-3.4
 
 # DEFAULTS VERSIONS
@@ -73,7 +74,9 @@ RUN apt update \
 
 # CREATE PATH TO APP
 WORKDIR /app
-COPY ./PGExtensions /app/PGExtensions
+# COPY ./OSM /app/OSM
+# COPY ./PGExtensions /app/PGExtensions
+# COPY ./OSMtools /app/OSMtools
 
 # DONWLOAD TYPES GRAPHs FOR USE
 RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
@@ -101,10 +104,10 @@ RUN apt purge -y --autoremove \
  && rm -rf /var/lib/apt/lists/*
 
 # UP EXTENSIONs
-RUN su && cd PGExtensions
-RUN echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-hstore.sql
-RUN echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-postgis.sql
-RUN echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-pgRouting.sql
+RUN cd PGExtensions \
+&& echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-hstore.sql \
+&& echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-postgis.sql \
+&& echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-pgRouting.sql
 
 # Expose PostgreSQL port
 EXPOSE 5432
