@@ -4,10 +4,9 @@ services:
 
   PGROUTING:
     container_name: PGROUTING_DB
-    image: pgrouting/pgrouting:0.1
+    image: postgis/postgis:16-3.4
     build:
       context: .
-      dockerfile: Dockerfile
     ports:
       - "5432:5432"
     volumes:
@@ -25,10 +24,9 @@ services:
 
   UPDATER:
     container_name: PGROUTING_UP_GRAPH
-    image: pgrouting/pgrouting:0.1
+    image: pgrouting/pgrouting:16-3.4-3.6.1
     build:
       context: .
-      dockerfile: Dockerfile
     deploy:
       resources:
         limits:
@@ -40,18 +38,13 @@ services:
     depends_on:
       - PGROUTING
     command: >
-      bash -c "su &&
-               apt update &&
-               apt list --upgradable &&
-               apt -f install &&
-               dpkg --configure -a &&
-               apt-get install osmium-tool &&
+      bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
                rm -f ./OSM/PROTOBUF/goias.pbf &&
                rm -f ./OSM/output_data_reduc.osm &&
-               osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./OSM/PROTOBUF/goias.pbf &&
                chmod +x /app/OSMtools/osmconvert64 &&
+               osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./OSM/PROTOBUF/goias.pbf &&
                /app/OSMtools/osmconvert64 ./OSM/PROTOBUF/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm &&
-               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig.xml --host PGROUTING --dbname postgres --username postgres --password postgres --port 5432 --addnodes --chunk 500 --clean"
+               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --host PGROUTING --dbname postgres --schema public --username postgres --password postgres --port 5432 --addnodes --attributes --tags --chunk 1000 --clean"
     networks:
       - pgrouting_network
 
