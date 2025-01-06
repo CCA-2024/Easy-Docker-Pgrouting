@@ -26,6 +26,8 @@ Links for pgRouting v3 Forked:
 
 - [https://github.com/pgRouting/osm2pgrouting](*/). Gith Osm2PGrouting.
 
+- [https://manpages.ubuntu.com/manpages/trusty/man1/osmconvert.1.html](*/). Osmconvert.
+
 ## 1° Step
  - Download your osm grahp in [Geofabrik](https://download.geofabrik.de/)
  - Save Your file downloaded *.pbf in `src\OSM\<Your File>.pbf`
