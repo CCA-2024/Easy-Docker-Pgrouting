@@ -43,7 +43,7 @@ services:
                rm -f ./OSM/output_data_reduc.osm &&
                osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/centro-oeste-latest.osm.pbf -o ./OSM/goias.pbf &&
                /app/OSM/osmconvert64 ./OSM/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm
-               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig.xml --host PGROUTING --dbname routing --username postgres --password postgres --port 5432 --clean"
+               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig.xml --host PGROUTING --dbname routing --username postgres --password postgres --port 5432 --addnodes --chunk 200 --clean"
     networks:
       - pgrouting_network
 

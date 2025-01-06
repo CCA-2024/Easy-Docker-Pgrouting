@@ -73,7 +73,6 @@ RUN apt update \
 
 # CREATE PATH TO APP
 WORKDIR /app
-# COPY ./OSM /app/OSM
 
 # DONWLOAD TYPES GRAPHs FOR USE
 RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
@@ -99,6 +98,9 @@ RUN apt purge -y --autoremove \
        zlib1g-dev \
  && apt autoremove -y \
  && rm -rf /var/lib/apt/lists/*
+
+# UP EXTENSION hstore
+RUN echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-hstore.sql
 
 # Expose PostgreSQL port
 EXPOSE 5432
