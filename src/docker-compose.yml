@@ -1,4 +1,4 @@
-name: ROUTER_SERVICE
+name: router_service
 version: "3.8"
 
 services:
@@ -46,7 +46,7 @@ services:
                osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/centro-oeste-latest.osm.pbf -o ./OSM/goias.pbf &&
                chmod +x ./OSM/osmconvert64 &&
                /app/OSM/osmconvert64 ./OSM/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm &&
-               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig.xml --host PGROUTING --dbname routing --username postgres --password postgres --port 5432 --addnodes --chunk 500 --clean"
+               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig.xml --host PGROUTING --dbname routing --username postgres --password postgres --port 5432 --chunk 100 --clean"
     networks:
       - pgrouting_network
 
