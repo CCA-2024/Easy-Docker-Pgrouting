@@ -1,6 +1,6 @@
 # Use a base image for PostGIS and PostgreSQL
 # postgis/postgis:16-3.4 pgrouting/pgrouting:16-3.4-3.6.1
-FROM postgis/postgis:16-3.4
+FROM pgrouting/pgrouting:16-3.4-3.6.1
 
 # DEFAULTS VERSIONS
 ENV OSM2PGROUTING_VERSION=2.3.8
@@ -74,9 +74,6 @@ RUN apt update \
 
 # CREATE PATH TO APP
 WORKDIR /app
-# COPY ./OSM /app/OSM
-# COPY ./PGExtensions /app/PGExtensions
-# COPY ./OSMtools /app/OSMtools
 
 # DONWLOAD TYPES GRAPHs FOR USE
 RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
@@ -103,11 +100,20 @@ RUN apt purge -y --autoremove \
  && apt autoremove -y \
  && rm -rf /var/lib/apt/lists/*
 
+# Copiar os scripts de extensão para o diretório correto
+COPY PGExtensions/init-hstore.sql /docker-entrypoint-initdb.d/
+COPY PGExtensions/init-postgis.sql /docker-entrypoint-initdb.d/
+COPY PGExtensions/init-pgRouting.sql /docker-entrypoint-initdb.d/
+COPY PGExtensions/init-cascade.sql /docker-entrypoint-initdb.d/
+
+# GARANTINDO AS PERMISSÕES CORRETAS NOS SCRIPTS
+RUN chmod 644 /docker-entrypoint-initdb.d/*.sql
+
 # UP EXTENSIONs
-RUN cd PGExtensions \
-&& echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-hstore.sql \
-&& echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-postgis.sql \
-&& echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-pgRouting.sql
+RUN echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-hstore.sql
+RUN echo "CREATE EXTENSION IF NOT EXISTS postgis;" > /docker-entrypoint-initdb.d/init-postgis.sql
+RUN echo "CREATE EXTENSION IF NOT EXISTS pgRouting;" > /docker-entrypoint-initdb.d/init-pgRouting.sql
+RUN echo "CREATE EXTENSION IF NOT EXISTS cascade;" > /docker-entrypoint-initdb.d/init-cascade.sql
 
 # Expose PostgreSQL port
 EXPOSE 5432

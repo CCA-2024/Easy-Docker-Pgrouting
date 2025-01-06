@@ -4,7 +4,7 @@ services:
 
   PGROUTING:
     container_name: PGROUTING_DB
-    image: pgrouting/pgrouting:16-3.4-3.6.1
+    image: pgrouting/pgrouting:0.1
     build:
       context: .
       dockerfile: Dockerfile
@@ -18,14 +18,14 @@ services:
     environment:
       POSTGRES_USER:      postgres
       POSTGRES_PASSWORD:  postgres
-      POSTGRES_DB:        routing
-    restart: always  # Garante que o banco de dados sempre ficará online
+      POSTGRES_DB:        postgres
+    restart: always # Garante que o banco de dados sempre ficará online
     networks:
       - pgrouting_network
 
   UPDATER:
     container_name: PGROUTING_UP_GRAPH
-    image: pgrouting/pgrouting:16-3.4-3.6.1
+    image: pgrouting/pgrouting:0.1
     build:
       context: .
       dockerfile: Dockerfile
@@ -51,7 +51,7 @@ services:
                osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./OSM/PROTOBUF/goias.pbf &&
                chmod +x /app/OSMtools/osmconvert64 &&
                /app/OSMtools/osmconvert64 ./OSM/PROTOBUF/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm &&
-               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig.xml --host PGROUTING --dbname routing --username postgres --password postgres --port 5432 --addnodes --chunk 500 --clean"
+               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig.xml --host PGROUTING --dbname postgres --username postgres --password postgres --port 5432 --addnodes --chunk 500 --clean"
     networks:
       - pgrouting_network
 
