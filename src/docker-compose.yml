@@ -5,14 +5,16 @@ services:
 
   PGROUTING:
     container_name: PGROUTING_DB
-    image: pgrouting/pgrouting:16-3.4-3.6.2
+    image: pgrouting/pgrouting:16-3.4-3.6.1
     build:
       context: .
+      dockerfile: Dockerfile
     ports:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./OSM:/app/OSM:rw
+      - ./OSMtools:/app/OSMtools:rw
       - ./PGExtensions:/app/PGExtensions:rw
     environment:
       POSTGRES_USER:      postgres
@@ -24,13 +26,17 @@ services:
 
   UPDATER:
     container_name: PGROUTING_UP_GRAPH
-    image: pgrouting/pgrouting:16-3.4-3.6.2
+    image: pgrouting/pgrouting:16-3.4-3.6.1
+    build:
+      context: .
+      dockerfile: Dockerfile
     deploy:
       resources:
         limits:
           memory: 9g
     volumes:
       - ./OSM:/app/OSM:rw
+      - ./OSMtools:/app/OSMtools:rw
       - ./PGExtensions:/app/PGExtensions:rw
     depends_on:
       - PGROUTING
@@ -41,7 +47,7 @@ services:
                apt -f install &&
                dpkg --configure -a &&
                apt-get install osmium-tool &&
-               rm -f ./OSM/goias.pbf &&
+               rm -f ./OSM/PROTOBUF/goias.pbf &&
                rm -f ./OSM/output_data_reduc.osm &&
                osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/centro-oeste-latest.osm.pbf -o ./OSM/goias.pbf &&
                chmod +x ./OSM/osmconvert64 &&
