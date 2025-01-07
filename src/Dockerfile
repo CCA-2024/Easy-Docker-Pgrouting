@@ -104,7 +104,7 @@ RUN apt purge -y --autoremove \
 COPY PGExtensions/*.sql /docker-entrypoint-initdb.d/ 
 
 # GARANTINDO AS PERMISSÕES CORRETAS NOS SCRIPTS
-RUN chmod 644 /docker-entrypoint-initdb.d/*.sql
+RUN chmod +x /docker-entrypoint-initdb.d/*.sql
 
 # UP EXTENSIONs
 RUN echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-hstore.sql
