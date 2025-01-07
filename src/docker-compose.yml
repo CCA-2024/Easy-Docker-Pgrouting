@@ -1,4 +1,5 @@
 name: router_service
+version: "3.8"
 
 services:
 
