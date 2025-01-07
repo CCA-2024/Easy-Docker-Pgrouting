@@ -2,13 +2,13 @@ name: router_service
 
 services:
 
-  PGROUTING:
+  pgrouting:
     container_name: PGROUTING_DB
     image: postgis/postgis:16-3.4
     build:
       context: .
     ports:
-      - "5432:5432"
+      - "7533:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./OSM:/app/OSM:rw
@@ -16,13 +16,13 @@ services:
       - ./PGExtensions:/app/PGExtensions:rw
     environment:
       POSTGRES_USER:      postgres
-      POSTGRES_PASSWORD:  postgres
+      POSTGRES_PASSWORD:  cca_roteirizador
       POSTGRES_DB:        postgres
     restart: always # Garante que o banco de dados sempre ficará online
     networks:
       - pgrouting_network
 
-  UPDATER:
+  updater:
     container_name: PGROUTING_UP_GRAPH
     image: pgrouting/pgrouting:16-3.4-3.6.1
     build:
@@ -36,7 +36,7 @@ services:
       - ./OSMtools:/app/OSMtools:rw
       - ./PGExtensions:/app/PGExtensions:rw
     depends_on:
-      - PGROUTING
+      - pgrouting
     command: >
       bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
                rm -f ./OSM/PROTOBUF/goias.pbf &&
@@ -44,7 +44,7 @@ services:
                chmod +x /app/OSMtools/osmconvert64 &&
                osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./OSM/PROTOBUF/goias.pbf &&
                /app/OSMtools/osmconvert64 ./OSM/PROTOBUF/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm &&
-               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --host PGROUTING --dbname postgres --schema public --username postgres --password postgres --port 5432 --addnodes --attributes --tags --chunk 1000 --clean"
+               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --host PGROUTING --dbname postgres --schema public --username postgres --password cca_roteirizador --port 5432 --addnodes --attributes --tags --chunk 1000 --clean"
     networks:
       - pgrouting_network
 
