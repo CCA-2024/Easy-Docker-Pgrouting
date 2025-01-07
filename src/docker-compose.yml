@@ -14,10 +14,8 @@ services:
       - ./OSM:/app/OSM:rw
       - ./OSMtools:/app/OSMtools:rw
       - ./PGExtensions:/app/PGExtensions:rw
-    environment:
-      POSTGRES_USER:      postgres
-      POSTGRES_PASSWORD:  cca_roteirizador
-      POSTGRES_DB:        postgres
+    env_file:
+      - .env
     restart: always # Garante que o banco de dados sempre ficará online
     networks:
       - pgrouting_network
