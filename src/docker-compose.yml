@@ -39,12 +39,12 @@ services:
       - pgrouting
     command: >
       bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
-               rm -f ./OSM/PROTOBUF/goias.pbf &&
-               rm -f ./OSM/output_data_reduc.osm &&
+               rm -f ./app/OSM/PROTOBUF/goias.pbf &&
+               rm -f ./app/OSM/output_data_reduc.osm &&
                chmod +x /app/OSMtools/osmconvert64 &&
-               osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./OSM/PROTOBUF/goias.pbf &&
+               osmium extract -b -49.72,-15.44,-47.25,-17.01 ./app/OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./app/OSM/PROTOBUF/goias.pbf &&
                /app/OSMtools/osmconvert64 ./OSM/PROTOBUF/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm &&
-               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --host PGROUTING --dbname postgres --schema public --username postgres --password cca_roteirizador --port 5432 --addnodes --attributes --tags --chunk 1000 --clean"
+               osm2pgrouting --f ./app/OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --host PGROUTING --dbname postgres --schema public --username postgres --password cca_roteirizador --port 5432 --addnodes --attributes --tags --chunk 1000 --clean"
     networks:
       - pgrouting_network
 
