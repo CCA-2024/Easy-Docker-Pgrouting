@@ -37,8 +37,7 @@ services:
       - osmtools-data:/app/OSMtools
       - pgextensions-data:/app/PGExtensions
     depends_on:
-      pgrouting:
-        condition: service_healthy 
+      - pgrouting
     command: >
       bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
                rm -f ./OSM/PROTOBUF/goias.pbf &&
