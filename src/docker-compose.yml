@@ -1,23 +1,25 @@
 name: router_service
+version: '3.9'
 
 services:
-
+  # Serviço para subir o banco de dados do psotgis
   pgrouting:
     container_name: PGROUTING_DB
     image: postgis/postgis:16-3.4
     build:
       context: .
+      dockerfile: Dockerfile
     ports:
-      - "7533:5432"
+      - "7533:5432" # direcianado para a porta externa
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./OSM:/app/OSM:rw
-      - ./OSMtools:/app/OSMtools:rw
-      - ./PGExtensions:/app/PGExtensions:rw
-    environment:
-      POSTGRES_USER:      postgres
-      POSTGRES_PASSWORD:  cca_roteirizador
-      POSTGRES_DB:        postgres
+      - osm-data:/app/OSM
+      - osmtools-data:/app/OSMtools
+      - pgextensions-data:/app/PGExtensions
+    environment: # usnado vairaveis de ambiente
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     restart: always # Garante que o banco de dados sempre ficará online
     networks:
       - pgrouting_network
@@ -27,29 +29,35 @@ services:
     image: pgrouting/pgrouting:16-3.4-3.6.1
     build:
       context: .
-    deploy:
+      dockerfile: Dockerfile
+    deploy: # Limitando o uso de memoria
       resources:
         limits:
           memory: 9g
     volumes:
-      - ./OSM:/app/OSM:rw
-      - ./OSMtools:/app/OSMtools:rw
-      - ./PGExtensions:/app/PGExtensions:rw
+      - osm-data:/app/OSM
+      - osmtools-data:/app/OSMtools
+      - pgextensions-data:/app/PGExtensions
     depends_on:
-      - pgrouting
+      pgrouting:
+        condition: service_healthy 
     command: >
       bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
-               rm -f ./app/OSM/PROTOBUF/goias.pbf &&
-               rm -f .app/OSM/output_data_reduc.osm &&
-               chmod +x /app/OSMtools/osmconvert64 &&
+               rm -f ./OSM/PROTOBUF/goias.pbf &&
+               rm -f ./OSM/output_data_reduc.osm &&
+               chmod +x ./OSMtools/osmconvert64 &&
                osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./OSM/PROTOBUF/goias.pbf &&
                /app/OSMtools/osmconvert64 ./OSM/PROTOBUF/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm &&
                osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --host PGROUTING --dbname postgres --schema public --username postgres --password cca_roteirizador --port 5432 --addnodes --attributes --tags --chunk 1000 --clean"
     networks:
       - pgrouting_network
 
+#Volumes utilizados
 volumes:
   db-data:
+  osm-data:
+  osmtools-data:
+  pgextensions-data:
 
 networks:
   pgrouting_network:
