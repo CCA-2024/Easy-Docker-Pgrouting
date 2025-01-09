@@ -4,6 +4,15 @@
 ![Docker status](https://img.shields.io/docker/cloud/build/pgrouting/pgrouting)
 ![Docker builds](https://img.shields.io/docker/pulls/pgrouting/pgrouting)
 
+<hr/>
+<div align="center">
+    <img src="./ico/logo-fmr.png"       alt="FMR"       style="margin: 0 10px; height: 70px;    width: 200px" />
+    <img src="./ico/logo-disbral.png"   alt="Disbral"   style="margin: 0 10px; height: 100px;   width: 300px" />
+    <img src="./ico/logo-enapa.png"     alt="ENAPA"     style="margin: 0 10px; height: 70px;    width: 200px" />
+</div>
+<hr/>
+<br>
+
 **Note**: The outdated docker images folders for the unsupported pgRouting versions are removed, but they can be retrieved from the Git history, if needed by someone.
 
 pgRouting Docker image (version 3.6.2) built over [Postgres 16/PostGIS 3.4](https://hub.docker.com/r/postgis/postgis) and dependencies.

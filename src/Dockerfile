@@ -101,19 +101,15 @@ RUN apt purge -y --autoremove \
  && rm -rf /var/lib/apt/lists/*
 
 # Copiar os scripts de extensão para o diretório correto
-COPY PGExtensions/init-hstore.sql /docker-entrypoint-initdb.d/
-COPY PGExtensions/init-postgis.sql /docker-entrypoint-initdb.d/
-COPY PGExtensions/init-pgRouting.sql /docker-entrypoint-initdb.d/
-COPY PGExtensions/init-cascade.sql /docker-entrypoint-initdb.d/
+COPY PGExtensions/*.sql /docker-entrypoint-initdb.d/ 
 
 # GARANTINDO AS PERMISSÕES CORRETAS NOS SCRIPTS
-RUN chmod 644 /docker-entrypoint-initdb.d/*.sql
+RUN chmod +x /docker-entrypoint-initdb.d/*.sql
 
 # UP EXTENSIONs
 RUN echo "CREATE EXTENSION IF NOT EXISTS hstore;" > /docker-entrypoint-initdb.d/init-hstore.sql
 RUN echo "CREATE EXTENSION IF NOT EXISTS postgis;" > /docker-entrypoint-initdb.d/init-postgis.sql
-RUN echo "CREATE EXTENSION IF NOT EXISTS pgRouting;" > /docker-entrypoint-initdb.d/init-pgRouting.sql
-RUN echo "CREATE EXTENSION IF NOT EXISTS cascade;" > /docker-entrypoint-initdb.d/init-cascade.sql
+RUN echo "CREATE EXTENSION IF NOT EXISTS pgrouting;" > /docker-entrypoint-initdb.d/init-pgRouting.sql
 
 # Expose PostgreSQL port
 EXPOSE 5432
