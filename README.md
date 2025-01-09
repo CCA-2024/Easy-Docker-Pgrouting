@@ -37,6 +37,8 @@ Links for pgRouting v3 Forked:
 
 - [https://manpages.ubuntu.com/manpages/trusty/man1/osmconvert.1.html](*/). Osmconvert.
 
+ - [https://live.osgeo.org/en/quickstart/pgrouting_quickstart.html](*/). QuickStart PGrouting.
+
 ## 1° Step
  - Download your osm grahp in [Geofabrik](https://download.geofabrik.de/)
  - Save Your file downloaded *.pbf in `src\OSM\<Your File>.pbf`
