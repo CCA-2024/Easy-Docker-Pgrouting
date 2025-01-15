@@ -1,9 +1,9 @@
-# Use a base image for PostGIS and PostgreSQL
 # postgis/postgis:16-3.4 pgrouting/pgrouting:16-3.4-3.6.1
 FROM pgrouting/pgrouting:16-3.4-3.6.1
+# Use a base image for PostGIS and PostgreSQL
 
+WORKDIR /app
 # DEFAULTS VERSIONS
-ENV OSM2PGROUTING_VERSION=2.3.8
 ENV PGROUTING_VERSION=3.6.2
 ENV PGROUTING_SHA256=f4a1ed79d6f714e52548eca3bb8e5593c6745f1bde92eb5fb858efd8984dffa2
 
@@ -40,49 +40,11 @@ RUN set -ex \
  && rm -rf /usr/src/pgrouting \
  && apt-mark manual postgresql-16
 
-# Install OSM2PGROUTING
-RUN apt update \
- && apt install -y \
-        libpqxx-6.4 \
- && apt install -y \
-        build-essential \
-        cmake \
-        wget \
-        libboost-program-options-dev \
-        libexpat1 \
-        libexpat-dev \
-        libosmium2-dev \
-        libpqxx-dev \
-        zlib1g-dev \
- && cd /usr/local/src \
- && wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
- && tar xvf v${OSM2PGROUTING_VERSION}.tar.gz \
- && cd osm2pgrouting-${OSM2PGROUTING_VERSION} \
- && mkdir build \
- && cd build \
- && cmake .. \
- && make \
- && make install \
- && cd ../tools/osmium/ \
- && mkdir build \
- && cd build \
- && cmake .. \
- && make \
- && make install \
- && cd /usr/local/src \
- && rm -rf ./*
+
 
 # CREATE PATH TO APP
-WORKDIR /app
 
-# DONWLOAD TYPES GRAPHs FOR USE
-RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
-&& tar xvf v${OSM2PGROUTING_VERSION}.tar.gz \
-&& rm v${OSM2PGROUTING_VERSION}.tar.gz \
-&& mkdir osm2pgrouting \
-&& cp ./osm2pgrouting-${OSM2PGROUTING_VERSION}/*.xml osm2pgrouting \
-&& rm -rf osm2pgrouting-${OSM2PGROUTING_VERSION} \
-&& mv osm2pgrouting osm2pgrouting-${OSM2PGROUTING_VERSION}
+
 
 # Clean up unnecessary packages
 RUN apt purge -y --autoremove \

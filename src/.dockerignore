@@ -8,8 +8,7 @@
 **/__pycache__
 **/.venv
 **/.classpath
-**/.dockerignore
-#**/.env
+
 **/.git
 **/.gitignore
 **/.project
@@ -20,9 +19,7 @@
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
-**/bin
 **/charts
-**/docker-compose*
 **/compose.y*ml
 
 **/node_modules

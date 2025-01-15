@@ -29,3 +29,5 @@ class OSMConverter:
             result = subprocess.run(run.split(' '), capture_output=True, text=True, check=True)
             print(result.stdout)
             print(result.stderr)
+        
+        with open('OSM/ok.txt', 'w') as fp:pass
