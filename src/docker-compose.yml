@@ -35,7 +35,6 @@ services:
       - pgrouting
     command: >
       bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
-               ls &&
                chmod +x ./OSMtools/osmconvert64 &&
                python main.py"
     networks:
