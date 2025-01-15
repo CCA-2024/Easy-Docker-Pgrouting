@@ -30,7 +30,7 @@ services:
         limits:
           memory: 9g
     volumes:
-      - data_osm:/src/OSMs
+      - data-osm:/src/OSMs
     depends_on:
       - pgrouting
     command: >
