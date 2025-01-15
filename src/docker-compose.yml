@@ -35,6 +35,9 @@ services:
       - pgrouting
     command: >
       bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
+          --mount=type=cache,target=/root/.cache/pip \
+          --mount=type=bind,source=requirements.txt,target=requirements.txt \
+          python -m pip install -r requirements.txt &&
                ls &&
                chmod +x ./OSMtools/osmconvert64 &&
                python main.py"
