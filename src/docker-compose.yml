@@ -1,4 +1,3 @@
-name: router_service
 version: "3.9"
 
 services:
@@ -30,7 +29,7 @@ services:
         limits:
           memory: 9g
     volumes:
-      - data-osm:/src/OSMs
+      - data-osm:/app/OSMs
     depends_on:
       - pgrouting
     command: >
