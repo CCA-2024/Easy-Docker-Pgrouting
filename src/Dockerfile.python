@@ -24,6 +24,51 @@ WORKDIR /app
 
 COPY . .
 
+ENV OSM2PGROUTING_VERSION=2.3.8
+# Install OSM2PGROUTING
+RUN apt update \
+ && apt install -y \
+        libpqxx-6.4 \
+ && apt install -y \
+        build-essential \
+        cmake \
+        wget \
+        libboost-program-options-dev \
+        libexpat1 \
+        libexpat-dev \
+        libosmium2-dev \
+        libpqxx-dev \
+        zlib1g-dev \
+ && cd /usr/local/src \
+ && wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
+ && tar xvf v${OSM2PGROUTING_VERSION}.tar.gz \
+ && cd osm2pgrouting-${OSM2PGROUTING_VERSION} \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make \
+ && make install \
+ && cd ../tools/osmium/ \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make \
+ && make install \
+ && cd /usr/local/src \
+ && rm -rf ./*
+
+# CREATE PATH TO APP
+
+# DONWLOAD TYPES GRAPHs FOR USE
+RUN wget https://github.com/pgRouting/osm2pgrouting/archive/v${OSM2PGROUTING_VERSION}.tar.gz \
+&& tar xvf v${OSM2PGROUTING_VERSION}.tar.gz \
+&& rm v${OSM2PGROUTING_VERSION}.tar.gz \
+&& mkdir osm2pgrouting \
+&& cp ./osm2pgrouting-${OSM2PGROUTING_VERSION}/*.xml osm2pgrouting \
+&& rm -rf osm2pgrouting-${OSM2PGROUTING_VERSION} \
+&& mv osm2pgrouting osm2pgrouting-${OSM2PGROUTING_VERSION}
+
+WORKDIR /app
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
