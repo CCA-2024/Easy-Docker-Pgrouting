@@ -32,6 +32,8 @@ services:
       - "7533:5432" # direcianado para a porta externa
     volumes:
       - db-data:/var/lib/postgresql/data
+    depends_on:
+      - spliter
     env_file: # usnado vairaveis de ambiente
       - .env
     restart: always # Garante que o banco de dados sempre ficará online
