@@ -102,6 +102,7 @@ RUN apt purge -y --autoremove \
 
 # Copiar os scripts de extensão para o diretório correto
 COPY PGExtensions/*.sql /docker-entrypoint-initdb.d/ 
+COPY . .
 
 # GARANTINDO AS PERMISSÕES CORRETAS NOS SCRIPTS
 RUN chmod +x /docker-entrypoint-initdb.d/*.sql
