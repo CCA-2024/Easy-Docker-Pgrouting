@@ -33,9 +33,7 @@ services:
         limits:
           memory: 9g
     volumes:
-      - osm-data:/app/OSM
-      - osmtools-data:/app/OSMtools
-      - pgextensions-data:/app/PGExtensions
+      - data_osm:/src/OSMs
     depends_on:
       - pgrouting
     command: >
@@ -43,19 +41,15 @@ services:
                rm -f ./OSM/PROTOBUF/goias.pbf &&
                rm -f ./OSM/output_data_reduc.osm &&
                chmod +x ./OSMtools/osmconvert64 &&
-               osmium extract -b -49.72,-15.44,-47.25,-17.01 ./OSM/PROTOBUF/centro-oeste-latest.osm.pbf -o ./OSM/PROTOBUF/goias.pbf &&
-               ./OSMtools/osmconvert64 ./OSM/PROTOBUF/goias.pbf --drop-author --drop-version --drop-broken-ref --complete-ways --complete-multipolygons -o=./OSM/output_data_reduc.osm &&
-               osm2pgrouting --f ./OSM/output_data_reduc.osm --conf ./osm2pgrouting-2.3.8/mapconfig_for_cars.xml --host PGROUTING --dbname postgres --schema public --username postgres --password cca_roteirizador --port 5432 --addnodes --attributes --tags --chunk 1000 --clean"
+               python main.py"
     networks:
       - pgrouting_network
 
 #Volumes utilizados
 volumes:
-  db-data:
-  osm-data:
-  osmtools-data:
-  pgextensions-data:
-
+  data-osm:
+    driver: local
+    
 networks:
   pgrouting_network:
     driver: bridge
