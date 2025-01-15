@@ -8,7 +8,7 @@ services:
     image: postgis/postgis:16-3.4
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.postgis
     ports:
       - "7533:5432" # direcianado para a porta externa
     volumes:
@@ -24,7 +24,7 @@ services:
     image: pgrouting/pgrouting:0.1
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.python
     deploy: # Limitando o uso de memoria
       resources:
         limits:
@@ -35,9 +35,6 @@ services:
       - pgrouting
     command: >
       bash -c "su && apt update && apt list --upgradable && apt -f install && dpkg --configure -a && apt-get install osmium-tool &&
-          --mount=type=cache,target=/root/.cache/pip \
-          --mount=type=bind,source=requirements.txt,target=requirements.txt \
-          python -m pip install -r requirements.txt &&
                ls &&
                chmod +x ./OSMtools/osmconvert64 &&
                python main.py"

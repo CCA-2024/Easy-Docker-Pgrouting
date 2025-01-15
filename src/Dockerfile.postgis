@@ -118,4 +118,4 @@ RUN echo "CREATE EXTENSION IF NOT EXISTS postgis;" > /docker-entrypoint-initdb.d
 RUN echo "CREATE EXTENSION IF NOT EXISTS pgrouting;" > /docker-entrypoint-initdb.d/init-pgRouting.sql
 
 # Expose PostgreSQL port
-EXPOSE 5432
+EXPOSE 5432   
